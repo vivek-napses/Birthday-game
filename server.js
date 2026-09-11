@@ -46,7 +46,12 @@ function buildStaticFileMap(baseDir, routePrefix = "") {
 const staticFiles = buildStaticFileMap(rootDir);
 
 function resolveFilePath(requestUrl) {
-  const pathname = decodeURIComponent((requestUrl || "/").split("?")[0]);
+  let pathname;
+  try {
+    pathname = decodeURIComponent((requestUrl || "/").split("?")[0]);
+  } catch (error) {
+    return { badRequest: true };
+  }
   if (pathname.split("/").includes("..")) {
     return { forbidden: true };
   }
@@ -60,6 +65,11 @@ function resolveFilePath(requestUrl) {
 
 const server = http.createServer((req, res) => {
   const resolution = resolveFilePath(req.url || "/");
+  if (resolution.badRequest) {
+    res.writeHead(400, { "Content-Type": "text/plain; charset=utf-8" });
+    res.end("Bad request");
+    return;
+  }
   if (resolution.forbidden) {
     res.writeHead(403, { "Content-Type": "text/plain; charset=utf-8" });
     res.end("Forbidden");

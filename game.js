@@ -191,6 +191,7 @@
       obstacle.x -= scrollSpeed * step;
       if (rectsOverlap(playerHitbox, obstacle)) {
         endGame(false);
+        return;
       }
     }
 
@@ -205,6 +206,7 @@
         progressFillEl.style.width = `${(state.score / goalScore) * 100}%`;
         if (state.score >= goalScore) {
           endGame(true);
+          return;
         }
       }
     }
