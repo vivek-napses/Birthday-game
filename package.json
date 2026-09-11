@@ -1,0 +1,12 @@
+{
+  "name": "birthday-game",
+  "version": "1.0.0",
+  "description": "Lightweight browser birthday game with Heroku-ready static hosting",
+  "private": true,
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "start": "node server.js"
+  }
+}
