@@ -48,40 +48,35 @@ const staticFiles = buildStaticFileMap(rootDir);
 function resolveFilePath(requestUrl) {
   const pathname = decodeURIComponent((requestUrl || "/").split("?")[0]);
   if (pathname.split("/").includes("..")) {
-    return null;
+    return { forbidden: true };
   }
   const requestedPath = pathname === "/" ? "/index.html" : pathname;
-  return staticFiles.get(requestedPath) || (path.extname(requestedPath) === "" ? staticFiles.get("/index.html") : null);
+  const filePath = staticFiles.get(requestedPath);
+  if (!filePath) {
+    return { notFound: true };
+  }
+  return { filePath };
 }
 
 const server = http.createServer((req, res) => {
-  const filePath = resolveFilePath(req.url || "/");
-  if (!filePath) {
+  const resolution = resolveFilePath(req.url || "/");
+  if (resolution.forbidden) {
     res.writeHead(403, { "Content-Type": "text/plain; charset=utf-8" });
     res.end("Forbidden");
     return;
   }
+  if (resolution.notFound) {
+    res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+    res.end("Not found");
+    return;
+  }
 
+  const { filePath } = resolution;
   fs.readFile(filePath, (error, content) => {
     if (error) {
       if (error.code === "ENOENT") {
-        const shouldFallbackToIndex = path.extname(filePath) === "";
-        if (!shouldFallbackToIndex) {
-          res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
-          res.end("Not found");
-          return;
-        }
-
-        const fallbackPath = path.join(rootDir, "index.html");
-        fs.readFile(fallbackPath, (fallbackError, fallbackContent) => {
-          if (fallbackError) {
-            res.writeHead(500);
-            res.end("Server error");
-            return;
-          }
-          res.writeHead(200, { "Content-Type": "text/html; charset=utf-8" });
-          res.end(fallbackContent);
-        });
+        res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+        res.end("Not found");
         return;
       }
       res.writeHead(500);

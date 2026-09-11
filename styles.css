@@ -170,14 +170,17 @@ canvas {
 
 @media (max-width: 760px) {
   .hero-card,
-  .hud,
-  .controls {
-    grid-template-columns: 1fr;
-    display: grid;
+  .hud {
+    display: flex;
+    flex-direction: column;
   }
 
   .hero-card {
     padding: 20px;
+  }
+
+  .controls {
+    grid-template-columns: 1fr;
   }
 
   .hero-status {
