@@ -24,19 +24,25 @@ A lightweight browser birthday game built with plain HTML, CSS, and JavaScript. 
 
 ## Heroku deployment
 
-1. Install and log in to the Heroku CLI:
+1. Work from this cloned Git repository (or another initialized Git repo with at least one commit), because `heroku create` adds the `heroku` Git remote used by the deploy push.
+2. Install and log in to the Heroku CLI:
    ```bash
    heroku login
    ```
-2. Create a Heroku app:
+3. Create a Heroku app from inside the repository:
    ```bash
    heroku create
    ```
-3. Push the repository to Heroku:
+4. If you created the project from scratch, commit your files before deployment:
+   ```bash
+   git add .
+   git commit -m "Prepare birthday game for Heroku"
+   ```
+5. Push the repository to Heroku:
    ```bash
    git push heroku HEAD:main
    ```
-4. Open the deployed app:
+6. Open the deployed app:
    ```bash
    heroku open
    ```

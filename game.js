@@ -398,7 +398,7 @@
     ctx.fillStyle = "#ffffff";
     ctx.textAlign = "center";
     ctx.font = "bold 42px Arial";
-    ctx.fillText(state.won ? "Happy Birthday Handu" : "Rally Paused", canvas.width / 2, 210);
+    ctx.fillText(state.won ? "Happy Birthday Handu" : "Game Over", canvas.width / 2, 210);
 
     ctx.font = "24px Arial";
     ctx.fillText(
