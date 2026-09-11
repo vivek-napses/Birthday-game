@@ -49,7 +49,7 @@ A lightweight browser birthday game built with plain HTML, CSS, and JavaScript. 
 
 The app uses:
 - `server.js` for static hosting
-- `package.json` with the `start` script and Node app metadata
+- `package.json` with the `start` script, Node app metadata, and `Node 22.x` runtime pin
 - `Procfile` with `web: node server.js`
 
 No runtime dependencies are required; the app is served by Node's built-in HTTP modules.

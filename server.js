@@ -82,23 +82,30 @@ const server = http.createServer((req, res) => {
   }
 
   const { filePath } = resolution;
-  fs.readFile(filePath, (error, content) => {
-    if (error) {
-      if (error.code === "ENOENT") {
-        res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
-        res.end("Not found");
-        return;
-      }
-      res.writeHead(500);
-      res.end("Server error");
-      return;
-    }
+  const ext = path.extname(filePath).toLowerCase();
+  const fileStream = fs.createReadStream(filePath);
 
-    const ext = path.extname(filePath).toLowerCase();
+  fileStream.on("open", () => {
     res.writeHead(200, {
       "Content-Type": mimeTypes[ext] || "application/octet-stream"
     });
-    res.end(content);
+    fileStream.pipe(res);
+  });
+
+  fileStream.on("error", (error) => {
+    if (res.headersSent) {
+      res.destroy(error);
+      return;
+    }
+
+    if (error.code === "ENOENT") {
+      res.writeHead(404, { "Content-Type": "text/plain; charset=utf-8" });
+      res.end("Not found");
+      return;
+    }
+
+    res.writeHead(500, { "Content-Type": "text/plain; charset=utf-8" });
+    res.end("Server error");
   });
 });
 

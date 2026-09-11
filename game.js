@@ -195,12 +195,13 @@
       }
     }
 
-    for (const item of collectibles) {
+    for (let index = collectibles.length - 1; index >= 0; index -= 1) {
+      const item = collectibles[index];
       item.x -= scrollSpeed * step;
       item.bob += 0.08 * step;
       item.y += Math.sin(item.bob) * 0.35;
       if (!item.collected && rectsOverlap(playerHitbox, item)) {
-        item.collected = true;
+        collectibles.splice(index, 1);
         state.score += 1;
         scoreEl.textContent = String(state.score);
         progressFillEl.style.width = `${(state.score / goalScore) * 100}%`;
@@ -208,14 +209,17 @@
           endGame(true);
           return;
         }
+        continue;
       }
     }
 
     while (obstacles.length && obstacles[0].x + obstacles[0].width < -10) {
       obstacles.shift();
     }
-    while (collectibles.length && collectibles[0].x + collectibles[0].width < -10) {
-      collectibles.shift();
+    for (let index = collectibles.length - 1; index >= 0; index -= 1) {
+      if (collectibles[index].x + collectibles[index].width < -10) {
+        collectibles.splice(index, 1);
+      }
     }
   }
 
@@ -366,9 +370,6 @@
   }
 
   function drawCollectible(item) {
-    if (item.collected) {
-      return;
-    }
     const centerX = item.x + item.width / 2;
     const centerY = item.y + item.height / 2;
     ctx.fillStyle = "#f1b82b";
