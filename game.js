@@ -154,7 +154,6 @@
     const step = deltaMs / 16.67;
     const scrollSpeed = getScrollSpeed();
     const difficulty = getDifficulty();
-    const playerHitbox = getPlayerHitbox();
     state.distance += scrollSpeed * step;
     state.obstacleTimer += deltaMs;
     state.collectibleTimer += deltaMs;
@@ -172,6 +171,8 @@
       if (!shouldDelayCollectible) {
         spawnCollectible();
         state.collectibleTimer = 0;
+      } else {
+        state.collectibleTimer -= 120;
       }
     }
 
@@ -183,6 +184,8 @@
       player.velocityY = 0;
       player.grounded = true;
     }
+
+    const playerHitbox = getPlayerHitbox();
 
     for (const obstacle of obstacles) {
       obstacle.x -= scrollSpeed * step;

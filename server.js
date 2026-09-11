@@ -17,18 +17,41 @@ const mimeTypes = {
   ".ico": "image/x-icon"
 };
 
+function buildStaticFileMap(baseDir, routePrefix = "") {
+  const staticFiles = new Map();
+  const entries = fs.readdirSync(baseDir, { withFileTypes: true });
+
+  for (const entry of entries) {
+    if (entry.name.startsWith(".") || entry.name === "node_modules") {
+      continue;
+    }
+
+    const fullPath = path.join(baseDir, entry.name);
+    const routePath = `${routePrefix}/${entry.name}`.replace(/\\/g, "/");
+    if (entry.isDirectory()) {
+      for (const [childRoute, childPath] of buildStaticFileMap(fullPath, routePath)) {
+        staticFiles.set(childRoute, childPath);
+      }
+      continue;
+    }
+
+    if (mimeTypes[path.extname(entry.name).toLowerCase()]) {
+      staticFiles.set(routePath, fullPath);
+    }
+  }
+
+  return staticFiles;
+}
+
+const staticFiles = buildStaticFileMap(rootDir);
+
 function resolveFilePath(requestUrl) {
   const pathname = decodeURIComponent((requestUrl || "/").split("?")[0]);
   if (pathname.split("/").includes("..")) {
     return null;
   }
   const requestedPath = pathname === "/" ? "/index.html" : pathname;
-  const normalizedPath = path.normalize(requestedPath).replace(/^([/\\])+/, "");
-  const filePath = path.join(rootDir, normalizedPath);
-  if (!filePath.startsWith(rootDir + path.sep) && filePath !== path.join(rootDir, "index.html")) {
-    return null;
-  }
-  return filePath;
+  return staticFiles.get(requestedPath) || (path.extname(requestedPath) === "" ? staticFiles.get("/index.html") : null);
 }
 
 const server = http.createServer((req, res) => {

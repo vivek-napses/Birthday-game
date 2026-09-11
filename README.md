@@ -24,15 +24,19 @@ A lightweight browser birthday game built with plain HTML, CSS, and JavaScript. 
 
 ## Heroku deployment
 
-1. Create a Heroku app:
+1. Install and log in to the Heroku CLI:
+   ```bash
+   heroku login
+   ```
+2. Create a Heroku app:
    ```bash
    heroku create
    ```
-2. Push the repository to Heroku:
+3. Push the repository to Heroku:
    ```bash
    git push heroku HEAD:main
    ```
-3. Open the deployed app:
+4. Open the deployed app:
    ```bash
    heroku open
    ```
